@@ -1,0 +1,8 @@
+aws_region   = "us-west-2"
+project_name = "whatcity"
+
+# Optional. Confirm the subscription email before the alarm can notify you.
+alarm_email = ""
+
+# Leave as * for the demo. After apply, you can set this to the site_url output.
+allowed_origin = "*"

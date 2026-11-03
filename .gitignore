@@ -1,5 +1,15 @@
 node_modules/
 .dist/
 backend/dist/
+backend/lambda-dist/
 frontend/dist/
 .env
+infra/.terraform/
+infra/build/
+*.tfstate
+*.tfstate.*
+crash.log
+override.tf
+override.tf.json
+*.tfvars
+!*.tfvars.example

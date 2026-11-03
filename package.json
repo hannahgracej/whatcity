@@ -4,7 +4,8 @@
   "version": "0.1.0",
   "scripts": {
     "install:all": "npm --prefix backend install && npm --prefix frontend install",
-    "dev": "concurrently \"npm --prefix backend run dev\" \"npm --prefix frontend run dev\""
+    "dev": "concurrently \"npm --prefix backend run dev\" \"npm --prefix frontend run dev\"",
+    "build:aws": "bash scripts/build-aws.sh"
   },
   "devDependencies": {
     "concurrently": "^9.0.1"
