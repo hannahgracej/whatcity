@@ -3,3 +3,9 @@ node_modules/
 backend/dist/
 frontend/dist/
 .env
+backend/dist-lambda/
+infra/.terraform/
+infra/*.tfstate
+infra/*.tfstate.*
+infra/build/
+infra/terraform.tfvars
