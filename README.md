@@ -34,7 +34,7 @@ City metrics live in `backend/src/data/cities.ts`. Scoring lives in `backend/src
 
 ## Deploy to AWS
 
-Requirements: Terraform 1.5+, Node 20+, and AWS credentials with permission to create the resources in `infra/`.
+Requirements: Terraform 1.5+, Node 20+, and AWS credentials with permission to create the resources in `infra/`. Regional resources are created in `us-east-2`, this project's selected Region. CloudFront stays global.
 
 ```bash
 ./scripts/build-aws.sh
