@@ -2,6 +2,7 @@ aws_region   = "us-east-2"
 project_name = "whatcity"
 
 # Optional. Confirm the subscription email before the alarm can notify you.
+# When this is set, Terraform also creates a $10 monthly account budget alert.
 alarm_email = ""
 
 # Leave as * for the demo. After apply, you can set this to the site_url output.

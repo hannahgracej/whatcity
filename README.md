@@ -60,13 +60,13 @@ To tear the stack down:
 terraform destroy
 ```
 
-Optional settings are in `infra/terraform.tfvars.example`. Copy it to `terraform.tfvars` (gitignored) and set `alarm_email` if the alarm should email you. Confirm that subscription in your inbox. With no email, the alarm still appears in the CloudWatch console.
+Optional settings are in `infra/terraform.tfvars.example`. Copy it to `terraform.tfvars` (gitignored) and set `alarm_email` if the alarm should email you. That address also gets a monthly budget alert at $10 for the whole AWS account. Confirm the alarm subscription in your inbox. With no email, the alarm still appears in the CloudWatch console and no budget is created.
 
 ### What the Terraform creates
 
 - **IAM.** A Lambda execution role whose only permission is writing to this function's log group.
 - **Lambda.** One Node.js 20 function. `backend/src/lambda.ts` adapts the same Express app used locally. The bundle is built with esbuild.
-- **API Gateway.** An HTTP API with a `$default` stage, proxy routes, access logs, and a low throttle for a demo.
+- **API Gateway.** An HTTP API with a `$default` stage, proxy routes, and access logs. The stage allows a burst of 20 requests and then 2 per second. That steady cap is about 5 million calls in a month, a few dollars at HTTP API rates, which keeps a public LinkedIn link from running up a bill. CloudFront still serves the page itself.
 - **CloudWatch.** 14-day retention on Lambda logs and API access logs. A metric filter counts log lines containing `ERROR`. An alarm fires when that count is at least 1 in five minutes, and publishes to an SNS topic.
 - **S3 and CloudFront.** The Vite build is uploaded to a private bucket. CloudFront reads it with origin access control. Hashed assets are cached; `/api/*` is not.
 

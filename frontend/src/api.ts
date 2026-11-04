@@ -8,6 +8,9 @@ export async function recommend(prefs: Preferences): Promise<Recommendation[]> {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(prefs)
   });
+  if (res.status === 429) {
+    throw new Error("Too many people are using this right now. Wait a few seconds and try again.");
+  }
   if (!res.ok) throw new Error("Failed to fetch recommendations");
   const data = (await res.json()) as { results: Recommendation[] };
   return data.results;

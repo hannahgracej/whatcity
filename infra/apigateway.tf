@@ -51,10 +51,14 @@ resource "aws_apigatewayv2_stage" "default" {
     })
   }
 
+  # Steady cap is 2 requests/second, with a short burst of 20 for a few
+  # people clicking at once. Held flat for a month that is about 5 million
+  # calls, roughly $5 of HTTP API charges plus a small Lambda request charge.
+  # Page views do not count: CloudFront serves those from S3.
   default_route_settings {
     detailed_metrics_enabled = true
-    throttling_burst_limit   = 20
-    throttling_rate_limit    = 10
+    throttling_burst_limit   = var.api_burst_limit
+    throttling_rate_limit    = var.api_rate_limit
   }
 
   depends_on = [aws_cloudwatch_log_resource_policy.apigw]
