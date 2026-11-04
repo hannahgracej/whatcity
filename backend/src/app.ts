@@ -42,7 +42,11 @@ app.post("/api/recommend", (req, res) => {
     sunny: clampPref(Number(req.body?.sunny ?? 0)),
     parks: clampPref(Number(req.body?.parks ?? 0)),
     restaurants: clampPref(Number(req.body?.restaurants ?? 0)),
-    transit: clampPref(Number(req.body?.transit ?? 0))
+    transit: clampPref(Number(req.body?.transit ?? 0)),
+    affordability: clampPref(Number(req.body?.affordability ?? 0)),
+    lgbtq: clampPref(Number(req.body?.lgbtq ?? 0)),
+    mildWinters: clampPref(Number(req.body?.mildWinters ?? 0)),
+    nightlife: clampPref(Number(req.body?.nightlife ?? 0))
   };
 
   const ranked = cities
@@ -51,11 +55,13 @@ app.post("/api/recommend", (req, res) => {
       score: scoreCity(city, prefs)
     }))
     .sort((a, b) => b.score - a.score)
-    .slice(0, 5)
+    .slice(0, 3)
     .map((row) => ({
       name: `${row.city.name}, ${row.city.state}`,
       score: Math.round(row.score),
-      reason: explain(row.city, prefs)
+      reason: explain(row.city, prefs),
+      description: row.city.description,
+      image: row.city.image
     }));
 
   res.json({ results: ranked });

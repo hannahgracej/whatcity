@@ -6,15 +6,56 @@ type Props = {
   onSubmit: (prefs: Preferences) => void;
 };
 
-function Slider({ label, value, onChange, colorVar }: { label: string; value: number; onChange: (v: number) => void; colorVar: string }) {
+const DEFAULT_PREFS: Preferences = {
+  sunny: 50,
+  parks: 50,
+  restaurants: 50,
+  transit: 50,
+  affordability: 50,
+  lgbtq: 50,
+  mildWinters: 50,
+  nightlife: 50
+};
+
+const FIELDS: Array<{ key: keyof Preferences; label: string; hint: string; colorVar: string }> = [
+  { key: "sunny", label: "Sunny days", hint: "More sun through the year", colorVar: "--color-sunny" },
+  { key: "parks", label: "Parks", hint: "Parks and easy time outside", colorVar: "--color-parks" },
+  { key: "restaurants", label: "Restaurants", hint: "A strong food scene", colorVar: "--color-restaurants" },
+  { key: "transit", label: "Public transit", hint: "Getting around without a car", colorVar: "--color-transit" },
+  { key: "affordability", label: "Lower cost of living", hint: "Favor cities that cost less", colorVar: "--color-cost" },
+  { key: "lgbtq", label: "LGBTQ+ protections", hint: "Favor stronger local protections", colorVar: "--color-lgbtq" },
+  { key: "mildWinters", label: "Mild winters", hint: "Favor warmer winters over hard cold", colorVar: "--color-winter" },
+  { key: "nightlife", label: "Nightlife", hint: "Music, late nights, and going out", colorVar: "--color-night" }
+];
+
+function Slider({
+  label,
+  hint,
+  value,
+  onChange,
+  colorVar
+}: {
+  label: string;
+  hint: string;
+  value: number;
+  onChange: (v: number) => void;
+  colorVar: string;
+}) {
   return (
-    <label>
-      <div style={{ fontWeight: 600, color: `var(${colorVar})` }}>{label}: {value}</div>
+    <label className="slider">
+      <span className="slider-copy">
+        <span className="slider-label" style={{ color: `var(${colorVar})` }}>
+          {label}
+        </span>
+        <span className="slider-hint">{hint}</span>
+      </span>
+      <span className="slider-value">{value}</span>
       <input
         type="range"
         min={0}
         max={100}
         value={value}
+        aria-label={label}
         onChange={(e) => onChange(Number(e.target.value))}
         style={{ accentColor: `var(${colorVar})` }}
       />
@@ -23,25 +64,32 @@ function Slider({ label, value, onChange, colorVar }: { label: string; value: nu
 }
 
 export default function PreferencesForm({ initial, onSubmit }: Props) {
-  const [prefs, setPrefs] = useState<Preferences>(
-    initial ?? { sunny: 50, parks: 50, restaurants: 50, transit: 50 }
-  );
+  const [prefs, setPrefs] = useState<Preferences>(initial ?? DEFAULT_PREFS);
   return (
     <form
+      className="panel"
       onSubmit={(e) => {
         e.preventDefault();
         onSubmit(prefs);
       }}
-      className="card card-pad"
-      style={{ maxWidth: 640, margin: "24px auto" }}
     >
-      <h2>What matters to you?</h2>
-      <p className="small">Set how important each is (0-100).</p>
-      <Slider label="Sunny Days" colorVar="--color-sunny" value={prefs.sunny} onChange={(v) => setPrefs((p) => ({ ...p, sunny: v }))} />
-      <Slider label="Parks Access" colorVar="--color-parks" value={prefs.parks} onChange={(v) => setPrefs((p) => ({ ...p, parks: v }))} />
-      <Slider label="Restaurants" colorVar="--color-restaurants" value={prefs.restaurants} onChange={(v) => setPrefs((p) => ({ ...p, restaurants: v }))} />
-      <Slider label="Public Transit" colorVar="--color-transit" value={prefs.transit} onChange={(v) => setPrefs((p) => ({ ...p, transit: v }))} />
-      <button type="submit" style={{ marginTop: 16 }}>Find My City</button>
+      <div className="panel-head">
+        <h2>What should the city be like?</h2>
+        <p>Slide right when that quality matters more. Every slider starts in the middle.</p>
+      </div>
+      <div className="slider-grid">
+        {FIELDS.map((field) => (
+          <Slider
+            key={field.key}
+            label={field.label}
+            hint={field.hint}
+            colorVar={field.colorVar}
+            value={prefs[field.key]}
+            onChange={(value) => setPrefs((current) => ({ ...current, [field.key]: value }))}
+          />
+        ))}
+      </div>
+      <button type="submit">Find my city</button>
     </form>
   );
 }

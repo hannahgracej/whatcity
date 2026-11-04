@@ -5,6 +5,10 @@ export type Preferences = {
   parks: number;
   restaurants: number;
   transit: number;
+  affordability: number;
+  lgbtq: number;
+  mildWinters: number;
+  nightlife: number;
 };
 
 export function clampPref(x: number): number {
@@ -12,32 +16,46 @@ export function clampPref(x: number): number {
   return Math.max(0, Math.min(100, x));
 }
 
+const WEIGHTS: Array<[keyof Preferences, keyof City["metrics"]]> = [
+  ["sunny", "sunny"],
+  ["parks", "parks"],
+  ["restaurants", "restaurants"],
+  ["transit", "transit"],
+  ["affordability", "affordability"],
+  ["lgbtq", "lgbtq"],
+  ["mildWinters", "mildWinters"],
+  ["nightlife", "nightlife"]
+];
+
 export function scoreCity(city: City, prefs: Preferences) {
-  const wSunny = clampPref(prefs.sunny);
-  const wParks = clampPref(prefs.parks);
-  const wRestaurants = clampPref(prefs.restaurants);
-  const wTransit = clampPref(prefs.transit);
-  const sumW = wSunny + wParks + wRestaurants + wTransit || 1;
-  const s =
-    (wSunny * city.metrics.sunny +
-      wParks * city.metrics.parks +
-      wRestaurants * city.metrics.restaurants +
-      wTransit * city.metrics.transit) /
-    sumW;
-  return s; // 0-100
+  let weighted = 0;
+  let sumW = 0;
+  for (const [prefKey, metricKey] of WEIGHTS) {
+    const weight = clampPref(prefs[prefKey]);
+    weighted += weight * city.metrics[metricKey];
+    sumW += weight;
+  }
+  return weighted / (sumW || 1);
 }
 
 export function explain(city: City, prefs: Preferences): string {
   const reasons: string[] = [];
   const thresholds = { high: 70, mid: 40 };
-  if (prefs.sunny >= thresholds.mid && city.metrics.sunny >= thresholds.high)
-    reasons.push("very sunny");
-  if (prefs.parks >= thresholds.mid && city.metrics.parks >= thresholds.high)
-    reasons.push("strong park access");
-  if (prefs.restaurants >= thresholds.mid && city.metrics.restaurants >= thresholds.high)
-    reasons.push("great restaurants");
-  if (prefs.transit >= thresholds.mid && city.metrics.transit >= thresholds.high)
-    reasons.push("excellent public transit");
-  if (!reasons.length) reasons.push("balanced match across preferences");
+  const notes: Array<[keyof Preferences, keyof City["metrics"], string]> = [
+    ["sunny", "sunny", "very sunny"],
+    ["parks", "parks", "strong park access"],
+    ["restaurants", "restaurants", "great restaurants"],
+    ["transit", "transit", "excellent public transit"],
+    ["affordability", "affordability", "more affordable than most of this list"],
+    ["lgbtq", "lgbtq", "stronger LGBTQ+ protections"],
+    ["mildWinters", "mildWinters", "mild winters"],
+    ["nightlife", "nightlife", "a busy nightlife"]
+  ];
+  for (const [prefKey, metricKey, label] of notes) {
+    if (prefs[prefKey] >= thresholds.mid && city.metrics[metricKey] >= thresholds.high) {
+      reasons.push(label);
+    }
+  }
+  if (!reasons.length) reasons.push("a balanced match across your preferences");
   return reasons.join(", ");
 }

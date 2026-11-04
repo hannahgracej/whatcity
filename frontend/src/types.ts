@@ -3,10 +3,16 @@ export type Preferences = {
   parks: number;
   restaurants: number;
   transit: number;
+  affordability: number;
+  lgbtq: number;
+  mildWinters: number;
+  nightlife: number;
 };
 
 export type Recommendation = {
   name: string;
-  score: number; // 0-100
+  score: number;
   reason: string;
+  description: string;
+  image: string;
 };

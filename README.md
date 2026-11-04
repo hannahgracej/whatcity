@@ -28,7 +28,7 @@ npm run dev
 The frontend runs on `http://localhost:5173` and proxies `/api` to the backend on `http://localhost:5000`.
 
 - `GET /api/health`
-- `POST /api/recommend` with `{ sunny, parks, restaurants, transit }` from `0` to `100`. Returns the top five matches.
+- `POST /api/recommend` with `{ sunny, parks, restaurants, transit, affordability, lgbtq, mildWinters, nightlife }` from `0` to `100`. Returns the top three matches, each with a description and image path. Scores are approximate demo data.
 
 City metrics live in `backend/src/data/cities.ts`. Scoring lives in `backend/src/scoring.ts`.
 
